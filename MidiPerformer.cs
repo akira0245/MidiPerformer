@@ -40,7 +40,7 @@ namespace MidiPerformer
 		{
 			try
 			{
-				var fileDialog = new OpenFileDialog {Title = "Select a midi file", Filter = "midi files (*.mid)|*.mid"};
+				var fileDialog = new OpenFileDialog { Title = "Select a midi file", Filter = "midi files (*.mid)|*.mid" };
 				fileDialog.ShowDialog();
 				if (!string.IsNullOrEmpty(fileDialog.FileName))
 					MidiPlayerSettings.Instance.midifilepath = fileDialog.FileName;
@@ -138,22 +138,23 @@ namespace MidiPerformer
 					var length = GetLength(current);
 					if (sleepdura.TotalMicroseconds == 0)
 					{
+						releaseNote(number);
 					}
 					else
 					{
 						if (length > sleepdura)
 						{
-							await Coroutine.Sleep(new TimeSpan((long) (sleepdura.TotalMicroseconds * 10 /
-							                                           MidiPlayerSettings.Instance.speed)));
+							await Coroutine.Sleep(new TimeSpan((long)(sleepdura.TotalMicroseconds * 10 /
+																	   MidiPlayerSettings.Instance.speed)));
 							releaseNote(number);
 						}
 						else
 						{
-							await Coroutine.Sleep(new TimeSpan((long) (length.TotalMicroseconds * 10 /
-							                                           MidiPlayerSettings.Instance.speed)));
+							await Coroutine.Sleep(new TimeSpan((long)(length.TotalMicroseconds * 10 /
+																	   MidiPlayerSettings.Instance.speed)));
 							releaseNote(number);
-							await Coroutine.Sleep(new TimeSpan((long) ((sleepdura - length).TotalMicroseconds * 10 /
-							                                           MidiPlayerSettings.Instance.speed)));
+							await Coroutine.Sleep(new TimeSpan((long)((sleepdura - length).TotalMicroseconds * 10 /
+																	   MidiPlayerSettings.Instance.speed)));
 						}
 					}
 				}
@@ -183,13 +184,13 @@ namespace MidiPerformer
 		private void playNote(int noteNum)
 		{
 			if (noteNum < 0 || noteNum > 36) return;
-			RaptureAtkUnitManager.GetWindowByName("PerformanceModeWide")?.SendAction(2, 3, 1, 4, (ulong) noteNum);
+			RaptureAtkUnitManager.GetWindowByName("PerformanceModeWide")?.SendAction(2, 3, 1, 4, (ulong)noteNum);
 		}
 
 		private void releaseNote(int noteNum)
 		{
 			if (noteNum < 0 || noteNum > 36) return;
-			RaptureAtkUnitManager.GetWindowByName("PerformanceModeWide")?.SendAction(2, 3, 2, 4, (ulong) noteNum);
+			RaptureAtkUnitManager.GetWindowByName("PerformanceModeWide")?.SendAction(2, 3, 2, 4, (ulong)noteNum);
 		}
 	}
 
@@ -198,8 +199,7 @@ namespace MidiPerformer
 		private static MidiPlayerSettings _settings;
 
 		private bool _lognotes;
-
-
+		
 		private string _midifilepath;
 
 		private double _speed;
