@@ -1,4 +1,6 @@
-﻿using System;
+﻿//!CompilerOption:AddRef:Melanchall.DryWetMidi.dll
+//!CompilerOption:Optimize:On
+using System;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
