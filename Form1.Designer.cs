@@ -40,7 +40,9 @@
 			this.button5 = new System.Windows.Forms.Button();
 			this.button7 = new System.Windows.Forms.Button();
 			this.button8 = new System.Windows.Forms.Button();
-			this.checkBox1 = new System.Windows.Forms.CheckBox();
+			this.checkbox_lognotes = new System.Windows.Forms.CheckBox();
+			this.checkbox_adaptnotes = new System.Windows.Forms.CheckBox();
+			this.checkbox_pause_when_not_in_mode = new System.Windows.Forms.CheckBox();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
 			this.SuspendLayout();
@@ -139,7 +141,7 @@
 			// 
 			this.button6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.button6.Font = new System.Drawing.Font("Segoe UI Emoji", 18F);
-			this.button6.Location = new System.Drawing.Point(181, 198);
+			this.button6.Location = new System.Drawing.Point(181, 262);
 			this.button6.Name = "button6";
 			this.button6.Size = new System.Drawing.Size(50, 50);
 			this.button6.TabIndex = 9;
@@ -151,7 +153,7 @@
 			// 
 			this.button5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.button5.Font = new System.Drawing.Font("Segoe UI Emoji", 18F);
-			this.button5.Location = new System.Drawing.Point(124, 198);
+			this.button5.Location = new System.Drawing.Point(124, 262);
 			this.button5.Name = "button5";
 			this.button5.Size = new System.Drawing.Size(50, 50);
 			this.button5.TabIndex = 10;
@@ -163,7 +165,7 @@
 			// 
 			this.button7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.button7.Font = new System.Drawing.Font("Segoe UI Emoji", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.button7.Location = new System.Drawing.Point(12, 198);
+			this.button7.Location = new System.Drawing.Point(12, 262);
 			this.button7.Name = "button7";
 			this.button7.Size = new System.Drawing.Size(50, 50);
 			this.button7.TabIndex = 11;
@@ -175,7 +177,7 @@
 			// 
 			this.button8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.button8.Font = new System.Drawing.Font("Segoe UI Emoji", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.button8.Location = new System.Drawing.Point(68, 198);
+			this.button8.Location = new System.Drawing.Point(68, 262);
 			this.button8.Name = "button8";
 			this.button8.Size = new System.Drawing.Size(50, 50);
 			this.button8.TabIndex = 12;
@@ -183,24 +185,49 @@
 			this.button8.UseVisualStyleBackColor = true;
 			this.button8.Click += new System.EventHandler(this.button8_Click);
 			// 
-			// checkBox1
+			// checkbox_lognotes
 			// 
-			this.checkBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.checkBox1.AutoSize = true;
-			this.checkBox1.Location = new System.Drawing.Point(12, 173);
-			this.checkBox1.Name = "checkBox1";
-			this.checkBox1.Size = new System.Drawing.Size(101, 19);
-			this.checkBox1.TabIndex = 17;
-			this.checkBox1.Text = "Log Notes";
-			this.checkBox1.UseVisualStyleBackColor = true;
-			this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+			this.checkbox_lognotes.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.checkbox_lognotes.AutoSize = true;
+			this.checkbox_lognotes.Location = new System.Drawing.Point(12, 237);
+			this.checkbox_lognotes.Name = "checkbox_lognotes";
+			this.checkbox_lognotes.Size = new System.Drawing.Size(101, 19);
+			this.checkbox_lognotes.TabIndex = 17;
+			this.checkbox_lognotes.Text = "Log Notes";
+			this.checkbox_lognotes.UseVisualStyleBackColor = true;
+			this.checkbox_lognotes.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+			// 
+			// checkbox_adaptnotes
+			// 
+			this.checkbox_adaptnotes.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.checkbox_adaptnotes.AutoSize = true;
+			this.checkbox_adaptnotes.Location = new System.Drawing.Point(12, 212);
+			this.checkbox_adaptnotes.Name = "checkbox_adaptnotes";
+			this.checkbox_adaptnotes.Size = new System.Drawing.Size(221, 19);
+			this.checkbox_adaptnotes.TabIndex = 18;
+			this.checkbox_adaptnotes.Text = "Adapt notes out of range";
+			this.checkbox_adaptnotes.UseVisualStyleBackColor = true;
+			this.checkbox_adaptnotes.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
+			// 
+			// checkbox_pause_when_not_in_mode
+			// 
+			this.checkbox_pause_when_not_in_mode.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.checkbox_pause_when_not_in_mode.Location = new System.Drawing.Point(12, 167);
+			this.checkbox_pause_when_not_in_mode.Name = "checkbox_pause_when_not_in_mode";
+			this.checkbox_pause_when_not_in_mode.Size = new System.Drawing.Size(221, 43);
+			this.checkbox_pause_when_not_in_mode.TabIndex = 19;
+			this.checkbox_pause_when_not_in_mode.Text = "Pause when not in performace mode";
+			this.checkbox_pause_when_not_in_mode.UseVisualStyleBackColor = true;
+			this.checkbox_pause_when_not_in_mode.CheckedChanged += new System.EventHandler(this.checkBox3_CheckedChanged);
 			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(240, 259);
-			this.Controls.Add(this.checkBox1);
+			this.ClientSize = new System.Drawing.Size(240, 323);
+			this.Controls.Add(this.checkbox_pause_when_not_in_mode);
+			this.Controls.Add(this.checkbox_adaptnotes);
+			this.Controls.Add(this.checkbox_lognotes);
 			this.Controls.Add(this.button8);
 			this.Controls.Add(this.button7);
 			this.Controls.Add(this.button5);
@@ -240,6 +267,8 @@
 		private System.Windows.Forms.Button button5;
 		private System.Windows.Forms.Button button7;
 		private System.Windows.Forms.Button button8;
-		private System.Windows.Forms.CheckBox checkBox1;
+		private System.Windows.Forms.CheckBox checkbox_lognotes;
+		private System.Windows.Forms.CheckBox checkbox_adaptnotes;
+		private System.Windows.Forms.CheckBox checkbox_pause_when_not_in_mode;
 	}
 }

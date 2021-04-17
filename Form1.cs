@@ -11,7 +11,9 @@ namespace MidiPerformer
 			InitializeComponent();
 			numericUpDown1.Value = (decimal) MidiPlayerSettings.Instance.speed;
 			numericUpDown2.Value = MidiPerformer.noteOffset;
-			checkBox1.Checked = MidiPlayerSettings.Instance.lognotes;
+			checkbox_lognotes.Checked = MidiPlayerSettings.Instance.lognotes;
+			checkbox_adaptnotes.Checked = MidiPlayerSettings.Instance.autoAdaptNotes;
+			checkbox_pause_when_not_in_mode.Checked = MidiPlayerSettings.Instance.pauseWhenNotInPerformanceMode;
 			//checkedListBox1.Items.Clear();
 			//checkedListBox1.Items.AddRange(MidiPerformer.currentFile.GetTrackChunks().ToArray());
 		}
@@ -79,11 +81,22 @@ namespace MidiPerformer
 		{
 			MidiPerformer.looping = !MidiPerformer.looping;
 			Log.Write(MidiPerformer.looping ? "looping enabled".ToUpper() : "looping disabled".ToUpper());
+			button7.ForeColor = MidiPerformer.looping ? System.Drawing.SystemColors.HotTrack : System.Drawing.SystemColors.ControlText;
 		}
 
 		private void checkBox1_CheckedChanged(object sender, EventArgs e)
 		{
-			MidiPlayerSettings.Instance.lognotes = checkBox1.Checked;
+			MidiPlayerSettings.Instance.lognotes = checkbox_lognotes.Checked;
+		}
+
+		private void checkBox2_CheckedChanged(object sender, EventArgs e)
+		{
+			MidiPlayerSettings.Instance.autoAdaptNotes = checkbox_adaptnotes.Checked;
+		}
+
+		private void checkBox3_CheckedChanged(object sender, EventArgs e)
+		{
+			MidiPlayerSettings.Instance.pauseWhenNotInPerformanceMode = checkbox_pause_when_not_in_mode.Checked;
 		}
 	}
 }

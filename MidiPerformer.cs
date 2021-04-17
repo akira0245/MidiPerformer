@@ -1,7 +1,6 @@
 ﻿//!CompilerOption:AddRef:Melanchall.DryWetMidi.dll
 //!CompilerOption:Optimize:On
 using System;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -43,7 +42,17 @@ namespace MidiPerformer
 				var fileDialog = new OpenFileDialog { Title = "Select a midi file", Filter = "midi files (*.mid)|*.mid" };
 				fileDialog.ShowDialog();
 				if (!string.IsNullOrEmpty(fileDialog.FileName))
+				{
+					using (var f = new FileStream(fileDialog.FileName, FileMode.Open))
+					{
+						var loaded = MidiFile.Read(f);
+						Log.Write(f.Name);
+						Log.Write($"{loaded.OriginalFormat}, {loaded.TimeDivision}, Duration: {loaded.GetDuration<MetricTimeSpan>().Hours:00}:{loaded.GetDuration<MetricTimeSpan>().Minutes:00}:{loaded.GetDuration<MetricTimeSpan>().Seconds:00}:{loaded.GetDuration<MetricTimeSpan>().Milliseconds:000}");
+						foreach (var track in loaded.Chunks) Log.Write(track);
+					}
+
 					MidiPlayerSettings.Instance.midifilepath = fileDialog.FileName;
+				}
 			}
 			catch (Exception e)
 			{
@@ -64,14 +73,14 @@ namespace MidiPerformer
 		{
 			try
 			{
-				using (var f = new FileStream(MidiPlayerSettings.Instance.midifilepath, FileMode.Open))
+				using (var f = new FileStream(MidiPlayerSettings.Instance.midifilepath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
 				{
 					currentFile = MidiFile.Read(f);
 					Log.Write(f.Name);
-					Log.Write(currentFile.TimeDivision);
-					Log.Write(currentFile.OriginalFormat);
-					Log.Write(currentFile.GetDuration<MetricTimeSpan>());
-					foreach (var track in currentFile.Chunks) Log.Write(track);
+					//Log.Write(currentFile.TimeDivision);
+					//Log.Write(currentFile.OriginalFormat);
+					//Log.Write(currentFile.GetDuration<MetricTimeSpan>());
+					//foreach (var track in currentFile.Chunks) Log.Write(track);
 				}
 			}
 			catch (Exception e)
@@ -84,6 +93,11 @@ namespace MidiPerformer
 			TreeRoot.TicksPerSecond = 255;
 			pausing = false;
 			started = true;
+		}
+
+		public override void Stop()
+		{
+			pausing = false;
 		}
 
 		public override async Task AsyncRoot()
@@ -113,29 +127,60 @@ namespace MidiPerformer
 					return;
 				}
 
-				if (RaptureAtkUnitManager.GetWindowByName("PerformanceModeWide") == null)
+				while (pausing) await Coroutine.Yield();
+
+				if (RaptureAtkUnitManager.GetWindowByName("PerformanceMode") != null)
 				{
-					if (RaptureAtkUnitManager.GetWindowByName("PerformanceMode") != null)
-						Log.Write("Please enable \"Assign all notes to keyboard.\" in Performance Settings.");
+					Log.Write("Please enable \"Assign all notes to keyboard.\" in Performance Settings.");
 					TreeRoot.Stop();
 					return;
 				}
 
-				while (pausing) await Coroutine.Yield();
+				while (RaptureAtkUnitManager.GetWindowByName("PerformanceModeWide") == null)
+				{
+					if (MidiPlayerSettings.Instance.pauseWhenNotInPerformanceMode)
+					{
+						await Coroutine.Yield();
+					}
+					else
+					{
+						TreeRoot.Stop();
+						return;
+					}
+				}
+
+
+
 
 				var current = notes[i];
+				var length = GetLength(current);
 				var number = current.NoteNumber - 48 + noteOffset;
+				var adaptedOctave = 0;
+				if (MidiPlayerSettings.Instance.autoAdaptNotes)
+				{
+					while (number < 0)
+					{
+						number += 12;
+						adaptedOctave++;
+					}
+					while (number > 36)
+					{
+						number -= 12;
+						adaptedOctave--;
+					}
+				}
 
 				if (MidiPlayerSettings.Instance.lognotes)
 					Log.Write(
-						$@"{GetTime(current).Minutes:00}:{GetTime(current).Seconds:00}.{GetTime(current).Milliseconds:000} {current}({number:00})");
+						$"{GetTime(current).Minutes:00}:{GetTime(current).Seconds:00}.{GetTime(current).Milliseconds:000} {current} ({number:00}) " +
+						$"{(number < 0 || number > 36 ? "(out of range)" : string.Empty)}" +
+						$"{(MidiPlayerSettings.Instance.autoAdaptNotes && adaptedOctave != 0 ? $"[adapted {adaptedOctave} Oct]" : string.Empty)}");
 
 				playNote(number);
 
 				try
 				{
 					var sleepdura = GetTime(notes[i + 1]) - GetTime(current);
-					var length = GetLength(current);
 					if (sleepdura.TotalMicroseconds == 0)
 					{
 						releaseNote(number);
@@ -144,22 +189,22 @@ namespace MidiPerformer
 					{
 						if (length > sleepdura)
 						{
-							await Coroutine.Sleep(new TimeSpan((long)(sleepdura.TotalMicroseconds * 10 /
-																	   MidiPlayerSettings.Instance.speed)));
+							await Coroutine.Sleep(new TimeSpan((long)(sleepdura.TotalMicroseconds * 10 / MidiPlayerSettings.Instance.speed)));
 							releaseNote(number);
 						}
 						else
 						{
-							await Coroutine.Sleep(new TimeSpan((long)(length.TotalMicroseconds * 10 /
-																	   MidiPlayerSettings.Instance.speed)));
+							await Coroutine.Sleep(new TimeSpan((long)(length.TotalMicroseconds * 10 / MidiPlayerSettings.Instance.speed)));
 							releaseNote(number);
-							await Coroutine.Sleep(new TimeSpan((long)((sleepdura - length).TotalMicroseconds * 10 /
-																	   MidiPlayerSettings.Instance.speed)));
+							await Coroutine.Sleep(new TimeSpan((long)((sleepdura - length).TotalMicroseconds * 10 / MidiPlayerSettings.Instance.speed)));
 						}
 					}
 				}
 				catch (ArgumentOutOfRangeException)
 				{
+					await Coroutine.Sleep(new TimeSpan((long)(length.TotalMicroseconds * 10 / MidiPlayerSettings.Instance.speed)));
+					releaseNote(number);
+
 					if (looping)
 					{
 						Log.Write("Looping.");
@@ -191,54 +236,6 @@ namespace MidiPerformer
 		{
 			if (noteNum < 0 || noteNum > 36) return;
 			RaptureAtkUnitManager.GetWindowByName("PerformanceModeWide")?.SendAction(2, 3, 2, 4, (ulong)noteNum);
-		}
-	}
-
-	internal class MidiPlayerSettings : JsonSettings
-	{
-		private static MidiPlayerSettings _settings;
-
-		private bool _lognotes;
-		
-		private string _midifilepath;
-
-		private double _speed;
-
-		public MidiPlayerSettings() : base(Path.Combine(CharacterSettingsDirectory, "MidiPlayerSettings.json"))
-		{
-		}
-
-		public static MidiPlayerSettings Instance => _settings ?? (_settings = new MidiPlayerSettings());
-
-		public string midifilepath
-		{
-			get => _midifilepath;
-			set
-			{
-				_midifilepath = value;
-				Save();
-			}
-		}
-
-		[DefaultValue(1d)]
-		public double speed
-		{
-			get => _speed;
-			set
-			{
-				_speed = value;
-				Save();
-			}
-		}
-
-		public bool lognotes
-		{
-			get => _lognotes;
-			set
-			{
-				_lognotes = value;
-				Save();
-			}
 		}
 	}
 
