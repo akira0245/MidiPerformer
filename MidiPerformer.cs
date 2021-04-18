@@ -3,6 +3,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Media;
@@ -127,29 +128,25 @@ namespace MidiPerformer
 					return;
 				}
 
-				while (pausing) await Coroutine.Yield();
+				while (pausing || MidiPlayerSettings.Instance.pauseWhenNotInPerformanceMode && RaptureAtkUnitManager.GetWindowByName("PerformanceModeWide") == null)
+				{
+					if (TreeRoot.Current != this || !TreeRoot.IsRunning)
+					{
+						return;
+					}
+					await Coroutine.Yield();
+				}
 
 				if (RaptureAtkUnitManager.GetWindowByName("PerformanceMode") != null)
 				{
 					Log.Write("Please enable \"Assign all notes to keyboard.\" in Performance Settings.");
+				}
+
+				if (RaptureAtkUnitManager.GetWindowByName("PerformanceModeWide") == null)
+				{
 					TreeRoot.Stop();
 					return;
 				}
-
-				while (RaptureAtkUnitManager.GetWindowByName("PerformanceModeWide") == null)
-				{
-					if (MidiPlayerSettings.Instance.pauseWhenNotInPerformanceMode)
-					{
-						await Coroutine.Yield();
-					}
-					else
-					{
-						TreeRoot.Stop();
-						return;
-					}
-				}
-
-
 
 
 				var current = notes[i];
