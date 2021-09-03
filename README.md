@@ -1,3 +1,6 @@
+> this plugin is no longer update or mainstanced.   
+a new performance plugin i made (for XIVLauncher) is avaliable here: https://github.com/akira0245/MidiBard  
+
 # MidiPerformer
 a rebornbuddy botbase use midi file for in-game bard performance.
 
